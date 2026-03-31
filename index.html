@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para você guardar</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&family=Cormorant+Infant:ital,wght@1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --paper:  #faf7f2;
+  --ink:    #1c1410;
+  --faded:  #8a7968;
+  --warm:   #c4956a;
+  --blush:  #d4a0a0;
+  --line:   rgba(140,120,100,0.15);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: #0e0c0a;
+  font-family: 'Lora', serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── Loading / intro ── */
+#loading {
+  position: fixed; inset: 0; z-index: 200;
+  background: #0e0c0a;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 1.5rem;
+  transition: opacity 1.5s ease;
+}
+#loading.out { opacity: 0; pointer-events: none; }
+.loading-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(196,149,106,0.5);
+  animation: dot-breathe 1.8s ease-in-out infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.3s; }
+.loading-dot:nth-child(3) { animation-delay: 0.6s; }
+@keyframes dot-breathe { 0%,100%{transform:scale(0.5);opacity:0.3} 50%{transform:scale(1.4);opacity:1} }
+.loading-dots { display:flex; gap:8px; }
+.loading-text {
+  font-family: 'Cormorant', serif; font-style: italic;
+  font-size: 0.8rem; letter-spacing: 0.35em;
+  color: rgba(196,149,106,0.4); text-transform: uppercase;
+}
+
+/* ── Outer wrapper: dark with ambient ── */
+#wrapper {
+  min-height: 100vh;
+  position: relative;
+  padding: 0 0 8rem;
+}
+
+/* Ambient glow */
+#wrapper::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(196,149,106,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(212,160,160,0.04) 0%, transparent 60%);
+}
+
+/* ── Paper ── */
+.paper {
+  position: relative; z-index: 10;
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.06),
+    0 4px 6px rgba(0,0,0,0.04),
+    0 20px 60px rgba(0,0,0,0.25),
+    0 60px 120px rgba(0,0,0,0.3);
+  padding: 5rem 5rem 6rem;
+  min-height: 100vh;
+  /* Paper texture via gradient */
+  background-image:
+    repeating-linear-gradient(
+      transparent, transparent 31px,
+      var(--line) 31px, var(--line) 32px
+    ),
+    linear-gradient(135deg, #fdf9f3 0%, #faf6ef 50%, #f8f3ea 100%);
+}
+
+/* Folded corner */
+.paper::after {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 40px 40px 0;
+  border-color: transparent #0e0c0a transparent transparent;
+  opacity: 0.15;
+}
+
+/* ── Date stamp ── */
+.date-stamp {
+  font-family: 'Cormorant', serif;
+  font-size: 0.72rem; letter-spacing: 0.25em;
+  color: var(--faded);
+  text-align: right;
+  margin-bottom: 3.5rem;
+  opacity: 0;
+  animation: fadeIn 1s forwards 0.5s;
+}
+
+/* ── Salutation ── */
+.salutation {
+  font-family: 'Cormorant Infant', serif;
+  font-style: italic;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  color: var(--ink);
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeIn 1.2s forwards 1s;
+}
+
+/* ── Body text ── */
+.letter-body {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: var(--ink);
+  line-height: 2;
+  font-weight: 400;
+}
+
+.para {
+  margin-bottom: 1.8rem;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+.para.visible { opacity: 1; transform: translateY(0); }
+
+/* Typewriter for final para */
+.typewriter {
+  border-right: 2px solid var(--ink);
+  white-space: pre-wrap;
+  overflow: hidden;
+  animation: none;
+}
+.typewriter.done { border-right: none; }
+
+/* Emphasis styles */
+em { font-style: italic; color: #4a3828; }
+strong { font-weight: 500; color: #2a1e14; }
+
+/* ── Pull quote ── */
+.pull-quote {
+  border-left: 2px solid var(--warm);
+  padding: 1rem 0 1rem 1.8rem;
+  margin: 2.5rem 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+.pull-quote.visible { opacity: 1; transform: translateY(0); }
+.pull-quote p {
+  font-family: 'Cormorant Infant', serif;
+  font-style: italic;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  color: #5a3e2c;
+  line-height: 1.7;
+}
+
+/* ── Memory pills ── */
+.memories {
+  margin: 2.5rem 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 1.2s ease 0.1s, transform 1.2s ease 0.1s;
+}
+.memories.visible { opacity: 1; transform: translateY(0); }
+.memories-label {
+  font-size: 0.68rem; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--faded); margin-bottom: 1rem;
+}
+.memories-list {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+}
+.mem {
+  font-family: 'Cormorant', serif; font-style: italic;
+  font-size: 0.88rem;
+  color: var(--faded);
+  border: 1px solid rgba(140,120,100,0.3);
+  padding: 0.3rem 0.8rem;
+  border-radius: 2px;
+  opacity: 0;
+  animation: mem-appear 0.6s ease forwards;
+  animation-play-state: paused;
+}
+.mem.play { animation-play-state: running; }
+@keyframes mem-appear { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+
+/* ── Signature ── */
+.signature-block {
+  margin-top: 3.5rem;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+.signature-block.visible { opacity: 1; }
+.sign-closing {
+  font-family: 'Cormorant', serif; font-style: italic;
+  font-size: 1rem; color: var(--faded);
+  margin-bottom: 0.8rem;
+}
+.sign-name {
+  font-family: 'Cormorant Infant', serif; font-style: italic;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  color: var(--ink);
+  line-height: 1;
+}
+.sign-ps {
+  margin-top: 2rem;
+  font-size: 0.85rem;
+  color: var(--faded);
+  font-style: italic;
+  line-height: 1.8;
+  border-top: 1px solid var(--line);
+  padding-top: 1.5rem;
+}
+
+/* ── Floating particles (dust) ── */
+.dust {
+  position: fixed; pointer-events: none; z-index: 5;
+  width: var(--sz); height: var(--sz);
+  border-radius: 50%;
+  background: var(--warm);
+  opacity: 0;
+  animation: dust-float var(--d) ease-in-out infinite var(--delay);
+}
+@keyframes dust-float {
+  0%   { opacity:0; transform:translateY(0) translateX(0); }
+  15%  { opacity:0.25; }
+  85%  { opacity:0.1; }
+  100% { opacity:0; transform:translateY(var(--ty)) translateX(var(--tx)); }
+}
+
+/* ── Read-more ── */
+#read-more {
+  position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  z-index: 50;
+  font-family: 'Cormorant', serif; font-style: italic;
+  font-size: 0.8rem; letter-spacing: 0.2em;
+  color: rgba(196,149,106,0.5);
+  animation: bob 2.5s ease-in-out infinite, fadeIn 1s forwards 3s;
+  opacity: 0;
+  pointer-events: none;
+}
+@keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+/* ── Final reveal ── */
+#final-word {
+  display: none;
+  position: fixed; inset: 0; z-index: 100;
+  background: #0e0c0a;
+  align-items: center; justify-content: center;
+  flex-direction: column; text-align: center;
+  padding: 2rem;
+}
+#final-word.show { display: flex; }
+
+.final-text {
+  font-family: 'Cormorant Infant', serif; font-style: italic;
+  font-size: clamp(1.3rem, 4vw, 2rem);
+  color: rgba(250,247,242,0.85);
+  max-width: 520px; line-height: 1.9;
+  opacity: 0;
+  animation: finalIn 2s forwards 0.5s;
+}
+.final-name {
+  font-family: 'Cormorant Infant', serif; font-style: italic;
+  font-size: clamp(3rem, 10vw, 6rem);
+  color: var(--paper);
+  line-height: 1;
+  margin-top: 1.5rem;
+  opacity: 0;
+  animation: finalIn 2s forwards 2.2s;
+  filter: drop-shadow(0 0 60px rgba(196,149,106,0.3));
+}
+.final-small {
+  font-size: 0.72rem; letter-spacing: 0.4em; text-transform: uppercase;
+  color: rgba(196,149,106,0.35);
+  margin-top: 2rem;
+  opacity: 0;
+  animation: finalIn 1.5s forwards 4s;
+}
+@keyframes finalIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.restart-link {
+  margin-top: 3rem;
+  font-family: 'Cormorant', serif; font-style: italic;
+  font-size: 0.8rem; letter-spacing: 0.2em;
+  color: rgba(196,149,106,0.2);
+  background: none; border: none; cursor: pointer;
+  opacity: 0; animation: finalIn 1s forwards 5.5s;
+  transition: color 0.3s;
+}
+.restart-link:hover { color: rgba(196,149,106,0.6); }
+
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  .paper { padding: 3.5rem 2rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading">
+  <div class="loading-dots">
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+  </div>
+  <p class="loading-text">preparando algo especial</p>
+</div>
+
+<!-- Dust particles -->
+<div id="dust-wrap"></div>
+
+<!-- Scroll hint -->
+<p id="read-more">role para ler ↓</p>
+
+<!-- Paper letter -->
+<div id="wrapper">
+<div class="paper">
+
+  <p class="date-stamp" id="date-stamp"></p>
+
+  <p class="salutation">Para você,</p>
+
+  <div class="letter-body">
+
+    <p class="para" data-delay="0">
+      Eu tentei escrever isso mil vezes.<br>
+      Joguei fora. Comecei de novo. Joguei fora outra vez.<br>
+      Porque nenhuma palavra parecia grande o suficiente<br>
+      para o que eu sinto.
+    </p>
+
+    <p class="para" data-delay="100">
+      Mas hoje decidi que imperfeito é melhor do que calado.
+    </p>
+
+    <div class="pull-quote">
+      <p>Você é a pessoa com quem eu quero dividir as coisas pequenas —<br>
+      o café de manhã, o silêncio de fim de tarde,<br>
+      o nada que, com você, vira tudo.</p>
+    </div>
+
+    <p class="para" data-delay="150">
+      Não sei exatamente quando aconteceu.
+      Não foi num momento dramático, num pôr do sol bonito,
+      numa cena de filme. Foi devagar. Foi nos detalhes.
+      Foi no jeito que você ri antes da piada acabar.
+      No jeito que você fica sério quando fala de algo que importa.
+      No jeito que você existe — completamente, sem esforço.
+    </p>
+
+    <p class="para" data-delay="200">
+      Eu percebi que quando algo bom acontece,
+      o meu primeiro pensamento é te contar.<br>
+      Quando algo ruim acontece, também.<br>
+      <em>Você virou o meu primeiro pensamento.</em>
+    </p>
+
+    <div class="memories" id="memories-block">
+      <p class="memories-label">momentos que guardo</p>
+      <div class="memories-list" id="mem-list"></div>
+    </div>
+
+    <p class="para" data-delay="100">
+      Tenho medo às vezes. De que seja demais.
+      De que eu não saiba fazer isso direito.
+      Mas aí eu lembro que com você eu me sinto
+      <strong>seguro o suficiente para ser imperfeito</strong> —
+      e isso é uma coisa rara demais para eu deixar passar.
+    </p>
+
+    <p class="para" data-delay="150">
+      Eu não tenho uma lista de promessas grandiosas.<br>
+      Não vou prometer que nunca vou errar.<br>
+      Vou prometer que quando errar, vou querer consertar.<br>
+      Que vou te olhar de verdade.<br>
+      Que vou estar aqui.
+    </p>
+
+    <div class="pull-quote">
+      <p>Amar você não é uma decisão que tomo todo dia —<br>
+      é simplesmente o que acontece quando acordo.</p>
+    </div>
+
+    <p class="para" data-delay="0" id="final-para">
+      Então é isso. Depois de todas as tentativas,<br>
+      de todas as palavras jogadas fora,<br>
+      o que sobrou foi o mais simples e o mais verdadeiro:<br><br>
+      <strong>Eu te amo.</strong><br><br>
+      Do jeitinho que você é.<br>
+      Do jeitinho que eu sou.<br>
+      Inteiros e imperfeitos, os dois.
+    </p>
+
+    <div class="signature-block" id="sig-block">
+      <p class="sign-closing">Com todo o amor que eu tenho,</p>
+      <p class="sign-name" id="sign-name"></p>
+      <div class="sign-ps">
+        <em>P.S. — Se você chegou até aqui,<br>
+        saiba que cada palavra foi pensada em você.<br>
+        Só em você.</em>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- Final screen -->
+<div id="final-word">
+  <p class="final-text">
+    Guarda essa carta.<br>
+    Nos dias em que você duvidar,<br>
+    nos dias em que o mundo pesar,<br>
+    nos dias em que você esquecer o quanto é amado —<br>
+    abre de novo. E lembra.
+  </p>
+  <p class="final-name">Eu te amo.</p>
+  <p class="final-small">— sempre, sem condição —</p>
+  <button class="restart-link" onclick="location.reload()">ler de novo ↩</button>
+</div>
+
+<script>
+/* ── Date ── */
+const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const now = new Date();
+document.getElementById('date-stamp').textContent =
+  now.getDate() + ' de ' + months[now.getMonth()] + ', ' + now.getFullYear();
+
+/* ── Dust ── */
+(()=>{
+  const wrap = document.getElementById('dust-wrap');
+  for(let i=0;i<22;i++){
+    const d=document.createElement('div');
+    d.className='dust';
+    const sz=(Math.random()*3+1)+'px';
+    d.style.cssText=`
+      --sz:${sz};
+      --d:${(Math.random()*14+8).toFixed(1)}s;
+      --delay:-${(Math.random()*14).toFixed(1)}s;
+      --ty:${(Math.random()*-200-50).toFixed(0)}px;
+      --tx:${((Math.random()-0.5)*120).toFixed(0)}px;
+      left:${(Math.random()*100).toFixed(1)}vw;
+      top:${(Math.random()*100).toFixed(1)}vh;
+    `;
+    wrap.appendChild(d);
+  }
+})();
+
+/* ── Memories ── */
+const mems = [
+  'aquela primeira vez', 'o silêncio de vocês dois', 'sua risada',
+  'quando você olhou assim', 'a mensagem às 2h', 'aquele dia de chuva',
+  'quando você me escolheu', 'teu jeito de falar', 'aquele abraço',
+  'quando percebi que era você'
+];
+
+/* ── Signature typing ── */
+let signDone = false;
+function typeName(){
+  if(signDone) return;
+  signDone = true;
+  const el = document.getElementById('sign-name');
+  const name = 'Eu.';
+  let i = 0;
+  el.textContent = '';
+  const iv = setInterval(()=>{
+    el.textContent += name[i];
+    i++;
+    if(i >= name.length) clearInterval(iv);
+  }, 120);
+}
+
+/* ── Loading → show ── */
+setTimeout(()=>{
+  document.getElementById('loading').classList.add('out');
+  setTimeout(()=>{
+    document.getElementById('loading').style.display='none';
+    startObserver();
+  }, 1500);
+}, 2200);
+
+/* ── Intersection Observer ── */
+function startObserver(){
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const el = e.target;
+
+      if(el.classList.contains('para') || el.classList.contains('pull-quote')){
+        const delay = parseInt(el.dataset.delay||0);
+        setTimeout(()=>el.classList.add('visible'), delay);
+        io.unobserve(el);
+      }
+
+      if(el.id === 'memories-block'){
+        el.classList.add('visible');
+        const list = document.getElementById('mem-list');
+        mems.forEach((m,i)=>{
+          const span = document.createElement('span');
+          span.className = 'mem';
+          span.textContent = m;
+          span.style.animationDelay = (i*120)+'ms';
+          list.appendChild(span);
+          setTimeout(()=>span.classList.add('play'), 50);
+        });
+        io.unobserve(el);
+      }
+
+      if(el.id === 'sig-block'){
+        setTimeout(()=>{
+          el.classList.add('visible');
+          typeName();
+        }, 400);
+
+        // Final screen after a pause
+        setTimeout(()=>{
+          document.getElementById('final-word').classList.add('show');
+        }, 5000);
+
+        io.unobserve(el);
+      }
+    });
+  }, {threshold:0.25});
+
+  document.querySelectorAll('.para, .pull-quote, #memories-block, #sig-block')
+    .forEach(el=>io.observe(el));
+}
+</script>
+</body>
+</html>
