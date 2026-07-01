@@ -3,545 +3,334 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Para você guardar</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&family=Cormorant+Infant:ital,wght@1,300&display=swap" rel="stylesheet">
+<title>Raspe e Descubra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,600;0,700;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --bg:#2C0B18;
+    --bg-deep:#1C0710;
+    --gold:#D4AF37;
+    --gold-soft:#E8CB6E;
+    --cream:#F7F1E3;
+    --ink:#2A1A20;
+    --muted:#C9A9AE;
+    --foil-a:#C9CDD4;
+    --foil-b:#EDEFF2;
+    --foil-c:#9FA4AC;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:radial-gradient(ellipse 90% 60% at 50% 0%, #431022, var(--bg-deep) 70%);
+    color:var(--cream);
+    font-family:'Work Sans', sans-serif;
+    line-height:1.6;
+  }
+  h1,h2,h3{ font-family:'Bodoni Moda', serif; font-weight:600; letter-spacing:0.01em; }
+  ::selection{ background:var(--gold); color:var(--ink); }
 
-:root {
-  --paper:  #faf7f2;
-  --ink:    #1c1410;
-  --faded:  #8a7968;
-  --warm:   #c4956a;
-  --blush:  #d4a0a0;
-  --line:   rgba(140,120,100,0.15);
-}
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+  }
 
-html { scroll-behavior: smooth; }
+  button:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
 
-body {
-  background: #0e0c0a;
-  font-family: 'Lora', serif;
-  overflow-x: hidden;
-  cursor: default;
-}
+  .wrap{ max-width:760px; margin:0 auto; padding:90px 22px 100px; }
 
-/* ── Loading / intro ── */
-#loading {
-  position: fixed; inset: 0; z-index: 200;
-  background: #0e0c0a;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 1.5rem;
-  transition: opacity 1.5s ease;
-}
-#loading.out { opacity: 0; pointer-events: none; }
-.loading-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: rgba(196,149,106,0.5);
-  animation: dot-breathe 1.8s ease-in-out infinite;
-}
-.loading-dot:nth-child(2) { animation-delay: 0.3s; }
-.loading-dot:nth-child(3) { animation-delay: 0.6s; }
-@keyframes dot-breathe { 0%,100%{transform:scale(0.5);opacity:0.3} 50%{transform:scale(1.4);opacity:1} }
-.loading-dots { display:flex; gap:8px; }
-.loading-text {
-  font-family: 'Cormorant', serif; font-style: italic;
-  font-size: 0.8rem; letter-spacing: 0.35em;
-  color: rgba(196,149,106,0.4); text-transform: uppercase;
-}
+  header{ text-align:center; margin-bottom:64px; }
+  .kicker{
+    font-size:13px; letter-spacing:0.22em; text-transform:uppercase;
+    color:var(--gold); margin-bottom:16px;
+  }
+  header h1{ font-size:clamp(34px,7vw,54px); }
+  header h1 em{ font-style:italic; color:var(--gold-soft); }
+  header p{ margin-top:18px; color:var(--muted); font-size:16px; max-width:420px; margin-inline:auto; }
 
-/* ── Outer wrapper: dark with ambient ── */
-#wrapper {
-  min-height: 100vh;
-  position: relative;
-  padding: 0 0 8rem;
-}
+  .divider{
+    width:64px; height:1px; background:var(--gold); margin:26px auto 0; opacity:0.6;
+  }
 
-/* Ambient glow */
-#wrapper::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(196,149,106,0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(212,160,160,0.04) 0%, transparent 60%);
-}
+  /* ===================== GRID ===================== */
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
 
-/* ── Paper ── */
-.paper {
-  position: relative; z-index: 10;
-  max-width: 680px;
-  margin: 0 auto;
-  background: var(--paper);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.06),
-    0 4px 6px rgba(0,0,0,0.04),
-    0 20px 60px rgba(0,0,0,0.25),
-    0 60px 120px rgba(0,0,0,0.3);
-  padding: 5rem 5rem 6rem;
-  min-height: 100vh;
-  /* Paper texture via gradient */
-  background-image:
-    repeating-linear-gradient(
-      transparent, transparent 31px,
-      var(--line) 31px, var(--line) 32px
-    ),
-    linear-gradient(135deg, #fdf9f3 0%, #faf6ef 50%, #f8f3ea 100%);
-}
+  .scratch-card{
+    position:relative;
+    aspect-ratio:1/1;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 18px 40px -18px rgba(0,0,0,0.6);
+    border:1px solid rgba(212,175,55,0.25);
+  }
+  .scratch-card.big{
+    grid-column:1 / -1;
+    aspect-ratio:16/9;
+  }
 
-/* Folded corner */
-.paper::after {
-  content: '';
-  position: absolute; top: 0; right: 0;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: 0 40px 40px 0;
-  border-color: transparent #0e0c0a transparent transparent;
-  opacity: 0.15;
-}
+  .card-content{
+    position:absolute; inset:0;
+    background:var(--cream);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card-content img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .card-caption{
+    position:absolute; left:0; right:0; bottom:0;
+    background:linear-gradient(180deg, transparent, rgba(0,0,0,0.55));
+    color:#fff; font-family:'Bodoni Moda', serif; font-style:italic;
+    font-size:15px; padding:26px 14px 12px; text-align:center;
+  }
+  .missing-ph{
+    position:absolute; inset:0; display:none; flex-direction:column; gap:8px;
+    align-items:center; justify-content:center; color:var(--muted);
+    background:repeating-linear-gradient(135deg, rgba(42,26,32,0.06) 0 10px, transparent 10px 20px), var(--cream);
+    font-size:12px;
+  }
+  .card-content.missing img{ display:none; }
+  .card-content.missing .missing-ph{ display:flex; }
+  .missing-ph .icon{ font-size:22px; color:var(--ink); }
 
-/* ── Date stamp ── */
-.date-stamp {
-  font-family: 'Cormorant', serif;
-  font-size: 0.72rem; letter-spacing: 0.25em;
-  color: var(--faded);
-  text-align: right;
-  margin-bottom: 3.5rem;
-  opacity: 0;
-  animation: fadeIn 1s forwards 0.5s;
-}
+  .message-content{
+    flex-direction:column; text-align:center; padding:30px; gap:6px;
+    background:linear-gradient(160deg, var(--cream), #efe6cf);
+  }
+  .message-content .kicker{ color:#8a6a2e; }
+  .message-content h2{ font-size:clamp(26px,5vw,36px); color:var(--ink); }
+  .message-content p{ color:#5b4a4e; font-size:15px; max-width:420px; }
+  .message-content .sign{ font-style:italic; font-family:'Bodoni Moda', serif; color:#8a6a2e; margin-top:6px; }
 
-/* ── Salutation ── */
-.salutation {
-  font-family: 'Cormorant Infant', serif;
-  font-style: italic;
-  font-size: clamp(1.5rem, 4vw, 2.2rem);
-  color: var(--ink);
-  margin-bottom: 2.5rem;
-  opacity: 0;
-  animation: fadeIn 1.2s forwards 1s;
-}
+  .scratch-canvas{
+    position:absolute; inset:0; width:100%; height:100%;
+    cursor:grab; touch-action:none;
+    transition:opacity 0.6s ease;
+  }
+  .scratch-canvas.cleared{ opacity:0; pointer-events:none; }
 
-/* ── Body text ── */
-.letter-body {
-  font-size: clamp(0.95rem, 2vw, 1.1rem);
-  color: var(--ink);
-  line-height: 2;
-  font-weight: 400;
-}
+  .scratch-label{
+    position:absolute; inset:0; z-index:2;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    pointer-events:none;
+    color:#4b4f57; text-align:center;
+    transition:opacity 0.5s ease;
+  }
+  .scratch-label .ic{ font-size:22px; opacity:0.75; }
+  .scratch-label span.txt{
+    font-size:12px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600; opacity:0.8;
+  }
+  .scratch-canvas.cleared + .scratch-label{ opacity:0; }
 
-.para {
-  margin-bottom: 1.8rem;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 1.2s ease, transform 1.2s ease;
-}
-.para.visible { opacity: 1; transform: translateY(0); }
+  .hint{
+    text-align:center; color:var(--muted); font-size:13.5px; margin-top:30px;
+  }
 
-/* Typewriter for final para */
-.typewriter {
-  border-right: 2px solid var(--ink);
-  white-space: pre-wrap;
-  overflow: hidden;
-  animation: none;
-}
-.typewriter.done { border-right: none; }
+  .heart-field{
+    position:fixed; inset:0; pointer-events:none; z-index:50; overflow:hidden;
+  }
+  .heart-field span{
+    position:absolute; bottom:-5%; color:var(--gold-soft); opacity:0;
+    animation:rise 3.2s ease-in forwards;
+  }
+  @keyframes rise{
+    0%{ opacity:0; transform:translateY(0) scale(0.7) rotate(0deg); }
+    12%{ opacity:0.9; }
+    100%{ opacity:0; transform:translateY(-100vh) scale(1.1) rotate(20deg); }
+  }
 
-/* Emphasis styles */
-em { font-style: italic; color: #4a3828; }
-strong { font-weight: 500; color: #2a1e14; }
+  footer{
+    text-align:center; padding:40px 20px 60px; color:var(--muted); font-size:13px;
+  }
 
-/* ── Pull quote ── */
-.pull-quote {
-  border-left: 2px solid var(--warm);
-  padding: 1rem 0 1rem 1.8rem;
-  margin: 2.5rem 0;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 1.2s ease, transform 1.2s ease;
-}
-.pull-quote.visible { opacity: 1; transform: translateY(0); }
-.pull-quote p {
-  font-family: 'Cormorant Infant', serif;
-  font-style: italic;
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
-  color: #5a3e2c;
-  line-height: 1.7;
-}
-
-/* ── Memory pills ── */
-.memories {
-  margin: 2.5rem 0;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 1.2s ease 0.1s, transform 1.2s ease 0.1s;
-}
-.memories.visible { opacity: 1; transform: translateY(0); }
-.memories-label {
-  font-size: 0.68rem; letter-spacing: 0.35em; text-transform: uppercase;
-  color: var(--faded); margin-bottom: 1rem;
-}
-.memories-list {
-  display: flex; flex-wrap: wrap; gap: 0.5rem;
-}
-.mem {
-  font-family: 'Cormorant', serif; font-style: italic;
-  font-size: 0.88rem;
-  color: var(--faded);
-  border: 1px solid rgba(140,120,100,0.3);
-  padding: 0.3rem 0.8rem;
-  border-radius: 2px;
-  opacity: 0;
-  animation: mem-appear 0.6s ease forwards;
-  animation-play-state: paused;
-}
-.mem.play { animation-play-state: running; }
-@keyframes mem-appear { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
-
-/* ── Signature ── */
-.signature-block {
-  margin-top: 3.5rem;
-  opacity: 0;
-  transition: opacity 1.5s ease;
-}
-.signature-block.visible { opacity: 1; }
-.sign-closing {
-  font-family: 'Cormorant', serif; font-style: italic;
-  font-size: 1rem; color: var(--faded);
-  margin-bottom: 0.8rem;
-}
-.sign-name {
-  font-family: 'Cormorant Infant', serif; font-style: italic;
-  font-size: clamp(2rem, 6vw, 3.2rem);
-  color: var(--ink);
-  line-height: 1;
-}
-.sign-ps {
-  margin-top: 2rem;
-  font-size: 0.85rem;
-  color: var(--faded);
-  font-style: italic;
-  line-height: 1.8;
-  border-top: 1px solid var(--line);
-  padding-top: 1.5rem;
-}
-
-/* ── Floating particles (dust) ── */
-.dust {
-  position: fixed; pointer-events: none; z-index: 5;
-  width: var(--sz); height: var(--sz);
-  border-radius: 50%;
-  background: var(--warm);
-  opacity: 0;
-  animation: dust-float var(--d) ease-in-out infinite var(--delay);
-}
-@keyframes dust-float {
-  0%   { opacity:0; transform:translateY(0) translateX(0); }
-  15%  { opacity:0.25; }
-  85%  { opacity:0.1; }
-  100% { opacity:0; transform:translateY(var(--ty)) translateX(var(--tx)); }
-}
-
-/* ── Read-more ── */
-#read-more {
-  position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
-  z-index: 50;
-  font-family: 'Cormorant', serif; font-style: italic;
-  font-size: 0.8rem; letter-spacing: 0.2em;
-  color: rgba(196,149,106,0.5);
-  animation: bob 2.5s ease-in-out infinite, fadeIn 1s forwards 3s;
-  opacity: 0;
-  pointer-events: none;
-}
-@keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
-
-/* ── Final reveal ── */
-#final-word {
-  display: none;
-  position: fixed; inset: 0; z-index: 100;
-  background: #0e0c0a;
-  align-items: center; justify-content: center;
-  flex-direction: column; text-align: center;
-  padding: 2rem;
-}
-#final-word.show { display: flex; }
-
-.final-text {
-  font-family: 'Cormorant Infant', serif; font-style: italic;
-  font-size: clamp(1.3rem, 4vw, 2rem);
-  color: rgba(250,247,242,0.85);
-  max-width: 520px; line-height: 1.9;
-  opacity: 0;
-  animation: finalIn 2s forwards 0.5s;
-}
-.final-name {
-  font-family: 'Cormorant Infant', serif; font-style: italic;
-  font-size: clamp(3rem, 10vw, 6rem);
-  color: var(--paper);
-  line-height: 1;
-  margin-top: 1.5rem;
-  opacity: 0;
-  animation: finalIn 2s forwards 2.2s;
-  filter: drop-shadow(0 0 60px rgba(196,149,106,0.3));
-}
-.final-small {
-  font-size: 0.72rem; letter-spacing: 0.4em; text-transform: uppercase;
-  color: rgba(196,149,106,0.35);
-  margin-top: 2rem;
-  opacity: 0;
-  animation: finalIn 1.5s forwards 4s;
-}
-@keyframes finalIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-
-.restart-link {
-  margin-top: 3rem;
-  font-family: 'Cormorant', serif; font-style: italic;
-  font-size: 0.8rem; letter-spacing: 0.2em;
-  color: rgba(196,149,106,0.2);
-  background: none; border: none; cursor: pointer;
-  opacity: 0; animation: finalIn 1s forwards 5.5s;
-  transition: color 0.3s;
-}
-.restart-link:hover { color: rgba(196,149,106,0.6); }
-
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
-
-/* ── Responsive ── */
-@media(max-width:600px){
-  .paper { padding: 3.5rem 2rem 4rem; }
-}
+  @media (max-width:480px){
+    .wrap{ padding:70px 16px 80px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- Loading -->
-<div id="loading">
-  <div class="loading-dots">
-    <div class="loading-dot"></div>
-    <div class="loading-dot"></div>
-    <div class="loading-dot"></div>
-  </div>
-  <p class="loading-text">preparando algo especial</p>
-</div>
+  <div class="wrap">
+    <header>
+      <p class="kicker">um pequeno presente bb</p>
+      <h1>Raspe e <em>descubra</em></h1>
+      <p>Nossas Memórias, Minha Gata</p>
+      <div class="divider"></div>
+    </header>
 
-<!-- Dust particles -->
-<div id="dust-wrap"></div>
+    <div class="grid" id="grid">
 
-<!-- Scroll hint -->
-<p id="read-more">role para ler ↓</p>
-
-<!-- Paper letter -->
-<div id="wrapper">
-<div class="paper">
-
-  <p class="date-stamp" id="date-stamp"></p>
-
-  <p class="salutation">Para você,</p>
-
-  <div class="letter-body">
-
-    <p class="para" data-delay="0">
-      Eu tentei escrever isso mil vezes.<br>
-      Joguei fora. Comecei de novo. Joguei fora outra vez.<br>
-      Porque nenhuma palavra é capaz de expressar <br>
-      o imenso amor que eu tenho por ti.
-    </p>
-
-    <p class="para" data-delay="100">
-      Mas hoje eu precisava fazer uma declaração pro cê minha gata.
-    </p>
-
-    <div class="pull-quote">
-      <p>tu és a pessoa com quem eu quero dividir as coisas pequenas —<br>
-      o café de manhã, o silêncio de fim de tarde,<br>
-      o nada que, com você, vira tudo.</p>
-    </div>
-
-    <p class="para" data-delay="150">
-      Não sei exatamente quando aconteceu.
-      Não foi num momento dramático, num pôr do sol bonito,
-      numa cena de filme. Foi devagar. Foi nos detalhes.
-      Foi no jeito que cê ri antes da piada acabar.
-      No jeito que fica séria quando fala de algo que importa.
-      No jeito que você existe — completamente, sem esforço.
-    </p>
-
-    <p class="para" data-delay="200">
-      Eu percebi que quando algo bom acontece,
-      o meu primeiro pensamento é te contar.<br>
-      Quando algo ruim acontece, também.<br>
-      <em>Você virou o meu primeiro pensamento.</em>
-    </p>
-
-    <div class="memories" id="memories-block">
-      <p class="memories-label">momentos que guardo</p>
-      <div class="memories-list" id="mem-list"></div>
-    </div>
-
-    <p class="para" data-delay="100">
-      Tenho medo às vezes. De que seja demais.
-      De que eu não saiba fazer isso direito.
-      Mas aí eu lembro que contigo eu me sinto
-      <strong>seguro o suficiente para ser imperfeito</strong> —
-      e isso é uma coisa rara demais para eu deixar passar.
-    </p>
-
-    <p class="para" data-delay="150">
-      Eu não tenho uma lista de promessas grandiosas.<br>
-      Não vou prometer que nunca vou errar.<br>
-      Vou prometer que quando errar, vou querer consertar.<br>
-      Que vou te olhar de verdade.<br>
-      Que vou estar aqui.
-    </p>
-
-    <div class="pull-quote">
-      <p>Amar você não é uma decisão que tomo todo dia —<br>
-      é simplesmente o que acontece quando acordo.</p>
-    </div>
-
-    <p class="para" data-delay="0" id="final-para">
-      Então é isso. Depois de todas as tentativas,<br>
-      de todas as palavras jogadas fora,<br>
-      o que sobrou foi o mais simples e o mais verdadeiro:<br><br>
-      <strong>Eu te amo.</strong><br><br>
-      Do jeitinho que você é.<br>
-      Do jeitinho que eu sou.<br>
-      Inteiros e imperfeitos, os dois.
-    </p>
-
-    <div class="signature-block" id="sig-block">
-      <p class="sign-closing">Com todo o amor que eu tenho,</p>
-      <p class="sign-name" id="sign-name"></p>
-      <div class="sign-ps">
-        <em>P.S. — Se você chegou até aqui,<br>
-        saiba que cada palavra foi pensada em você.<br>
-        </em>
+      <div class="scratch-card" data-index="0">
+        <div class="card-content">
+          <img src="Fotos/Gramado.jpeg" alt="Foto 1" onerror="this.parentElement.classList.add('missing')">
+          <div class="missing-ph"><span class="icon">＋</span><span>fotos/foto1.jpg</span></div>
+          <p class="card-caption">legenda 1</p>
+        </div>
+        <canvas class="scratch-canvas"></canvas>
+        <div class="scratch-label"><span class="ic">✦</span><span class="txt">raspe aqui</span></div>
       </div>
+
+      <div class="scratch-card" data-index="1">
+        <div class="card-content">
+          <img src="Fotos/Igreja.jpeg" alt="Foto 2" onerror="this.parentElement.classList.add('missing')">
+          <div class="missing-ph"><span class="icon">＋</span><span>fotos/foto2.jpg</span></div>
+          <p class="card-caption">legenda 2</p>
+        </div>
+        <canvas class="scratch-canvas"></canvas>
+        <div class="scratch-label"><span class="ic">✦</span><span class="txt">raspe aqui</span></div>
+      </div>
+
+      <div class="scratch-card" data-index="2">
+        <div class="card-content">
+          <img src="Fotos/Praia.jpeg" alt="Foto 3" onerror="this.parentElement.classList.add('missing')">
+          <div class="missing-ph"><span class="icon">＋</span><span>fotos/foto3.jpg</span></div>
+          <p class="card-caption">legenda 3</p>
+        </div>
+        <canvas class="scratch-canvas"></canvas>
+        <div class="scratch-label"><span class="ic">✦</span><span class="txt">raspe aqui</span></div>
+      </div>
+
+      <div class="scratch-card" data-index="3">
+        <div class="card-content">
+          <img src="Fotos/Sobrancelha.jpeg" alt="Foto 4" onerror="this.parentElement.classList.add('missing')">
+          <div class="missing-ph"><span class="icon">＋</span><span>fotos/foto4.jpg</span></div>
+          <p class="card-caption">legenda 4</p>
+        </div>
+        <canvas class="scratch-canvas"></canvas>
+        <div class="scratch-label"><span class="ic">✦</span><span class="txt">raspe aqui</span></div>
+      </div>
+
+      <div class="scratch-card big" data-index="4">
+        <div class="card-content message-content">
+          <p class="kicker">a última</p>
+          <h2>Eu te amo</h2>
+          <p>Eu podia escrever mil páginas e ainda assim faltaria espaço pra dizer o quanto tu importante para mim. Então fica só isso: eu te amo, do jeito mais simples e mais verdadeiro que existe.</p>
+          <span class="sign">Com todo o meu amor.</span>
+        </div>
+        <canvas class="scratch-canvas"></canvas>
+        <div class="scratch-label"><span class="ic">♥</span><span class="txt">raspe para revelar</span></div>
+      </div>
+
     </div>
 
+    <p class="hint">Raspa bb</p>
   </div>
-</div>
-</div>
 
-<!-- Final screen -->
-<div id="final-word">
-  <p class="final-text">
-    Guarda essa carta.<br>
-    Nos dias em que você duvidar,<br>
-    nos dias em que o mundo pesar,<br>
-    nos dias em que você esquecer o quanto é amada —<br>
-    abre de novo. E lembra.
-  </p>
-  <p class="final-name">Eu te amo.</p>
-  <p class="final-small">— sempre, sem condição —</p>
-  <button class="restart-link" onclick="location.reload()">ler de novo ↩</button>
-</div>
+  <footer></footer>
+
+  <div class="heart-field" id="heartField"></div>
 
 <script>
-/* ── Date ── */
-const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const now = new Date();
-document.getElementById('date-stamp').textContent =
-  now.getDate() + ' de ' + months[now.getMonth()] + ', ' + now.getFullYear();
+  const cards = document.querySelectorAll('.scratch-card');
 
-/* ── Dust ── */
-(()=>{
-  const wrap = document.getElementById('dust-wrap');
-  for(let i=0;i<22;i++){
-    const d=document.createElement('div');
-    d.className='dust';
-    const sz=(Math.random()*3+1)+'px';
-    d.style.cssText=`
-      --sz:${sz};
-      --d:${(Math.random()*14+8).toFixed(1)}s;
-      --delay:-${(Math.random()*14).toFixed(1)}s;
-      --ty:${(Math.random()*-200-50).toFixed(0)}px;
-      --tx:${((Math.random()-0.5)*120).toFixed(0)}px;
-      left:${(Math.random()*100).toFixed(1)}vw;
-      top:${(Math.random()*100).toFixed(1)}vh;
-    `;
-    wrap.appendChild(d);
+  function initCard(card) {
+    const canvas = card.querySelector('.scratch-canvas');
+    const label = card.querySelector('.scratch-label');
+    const ctx = canvas.getContext('2d');
+    let cleared = false;
+    let scratching = false;
+
+    function size() {
+      const rect = card.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      drawFoil();
+    }
+
+    function drawFoil() {
+      const w = canvas.width, h = canvas.height;
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#EDEFF2');
+      grad.addColorStop(0.35, '#B8BCC2');
+      grad.addColorStop(0.6, '#E8EAED');
+      grad.addColorStop(1, '#9FA4AC');
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 1;
+      for (let i = -h; i < w; i += 10) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i + h, h);
+        ctx.stroke();
+      }
+    }
+
+    function scratchAt(x, y) {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(x, y, 26, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function checkProgress() {
+      if (cleared) return;
+      const w = canvas.width, h = canvas.height;
+      const sampleStep = 8;
+      let transparent = 0, total = 0;
+      const data = ctx.getImageData(0, 0, w, h).data;
+      for (let y = 0; y < h; y += sampleStep) {
+        for (let x = 0; x < w; x += sampleStep) {
+          const idx = (y * w + x) * 4 + 3;
+          total++;
+          if (data[idx] < 40) transparent++;
+        }
+      }
+      if (total > 0 && transparent / total > 0.5) {
+        cleared = true;
+        canvas.classList.add('cleared');
+        if (card.dataset.index === '4') celebrate();
+      }
+    }
+
+    function pointerPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const p = e.touches ? e.touches[0] : e;
+      return { x: p.clientX - rect.left, y: p.clientY - rect.top };
+    }
+
+    function start(e) {
+      scratching = true;
+      const pos = pointerPos(e);
+      scratchAt(pos.x, pos.y);
+    }
+    function move(e) {
+      if (!scratching) return;
+      e.preventDefault();
+      const pos = pointerPos(e);
+      scratchAt(pos.x, pos.y);
+      checkProgress();
+    }
+    function end() { scratching = false; checkProgress(); }
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+    canvas.addEventListener('touchstart', start, { passive:true });
+    canvas.addEventListener('touchmove', move, { passive:false });
+    canvas.addEventListener('touchend', end);
+
+    size();
+    window.addEventListener('resize', () => { if (!scratching) size(); });
   }
-})();
 
-/* ── Memories ── */
-const mems = [
-  'aquela primeira vez', 'o nosso silencio juntos', 'sua risada',
-  'quando você me olha já se querendo', 'a mensagem às 2h', 'aquele dia de chuva',
-  'quando você me escolheu', 'teu jeito de falar', 'aquele abraço',
-  'quando percebi que era você'
-];
+  cards.forEach(initCard);
 
-/* ── Signature typing ── */
-let signDone = false;
-function typeName(){
-  if(signDone) return;
-  signDone = true;
-  const el = document.getElementById('sign-name');
-  const name = 'Eu.';
-  let i = 0;
-  el.textContent = '';
-  const iv = setInterval(()=>{
-    el.textContent += name[i];
-    i++;
-    if(i >= name.length) clearInterval(iv);
-  }, 120);
-}
-
-/* ── Loading → show ── */
-setTimeout(()=>{
-  document.getElementById('loading').classList.add('out');
-  setTimeout(()=>{
-    document.getElementById('loading').style.display='none';
-    startObserver();
-  }, 1500);
-}, 2200);
-
-/* ── Intersection Observer ── */
-function startObserver(){
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(!e.isIntersecting) return;
-      const el = e.target;
-
-      if(el.classList.contains('para') || el.classList.contains('pull-quote')){
-        const delay = parseInt(el.dataset.delay||0);
-        setTimeout(()=>el.classList.add('visible'), delay);
-        io.unobserve(el);
-      }
-
-      if(el.id === 'memories-block'){
-        el.classList.add('visible');
-        const list = document.getElementById('mem-list');
-        mems.forEach((m,i)=>{
-          const span = document.createElement('span');
-          span.className = 'mem';
-          span.textContent = m;
-          span.style.animationDelay = (i*120)+'ms';
-          list.appendChild(span);
-          setTimeout(()=>span.classList.add('play'), 50);
-        });
-        io.unobserve(el);
-      }
-
-      if(el.id === 'sig-block'){
-        setTimeout(()=>{
-          el.classList.add('visible');
-          typeName();
-        }, 400);
-
-        // Final screen after a pause
-        setTimeout(()=>{
-          document.getElementById('final-word').classList.add('show');
-        }, 9000);
-
-        io.unobserve(el);
-      }
-    });
-  }, {threshold:0.25});
-
-  document.querySelectorAll('.para, .pull-quote, #memories-block, #sig-block')
-    .forEach(el=>io.observe(el));
-}
+  function celebrate() {
+    const field = document.getElementById('heartField');
+    for (let i = 0; i < 22; i++) {
+      const h = document.createElement('span');
+      h.textContent = '♥';
+      h.style.left = Math.random() * 100 + '%';
+      h.style.fontSize = (14 + Math.random() * 18) + 'px';
+      h.style.animationDelay = (Math.random() * 1.4) + 's';
+      field.appendChild(h);
+      setTimeout(() => h.remove(), 4500);
+    }
+  }
 </script>
+
 </body>
 </html>
